@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.book.demo.mapper.UserMapper">
+    <select id="findAll" resultType="User">
+        SELECT * FROM tb_user
+    </select>
+
+    <delete id="deleteById" >
+        delete  from tb_user where id = #{id}
+    </delete>
+
+    <insert id="add" parameterType="User">
+        insert into  tb_user VALUES(null,#{username},#{password})
+    </insert>
+
+    <select id="findById" resultType="User">
+        select * from tb_user where id =#{id}
+    </select>
+</mapper>

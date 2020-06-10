@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <template>
+        <el-table
+                :data="tableData"
+                stripe
+                style="width: 100%">
+            <el-table-column
+                    prop="id"
+                    label="id"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="username"
+                    label="姓名"
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="password"
+                    label="密码"
+                    width="180">
+            </el-table-column>
+            <el-table-column label="操作">
+                <el-button>删除</el-button>
+            </el-table-column>
+        </el-table>
+    </template>
+</div>
+</body>
+<script>
+    var app = new Vue({
+        el: '#app',
+        data() {
+            return {
+                tableData: []
+            }
+        },
+        methods: {
+            links: function () {
+            var _this=this;
+                axios.get("http://localhost/user/findAll").then (function (res) {
+                 _this.tableData = res.data;
+                 console.log(res.data);
+                 console.log(this.tableData);
+
+             })
+            },
+
+        },
+        created(){
+            this.links()
+
+        }
+    })
+</script>
+</html>
