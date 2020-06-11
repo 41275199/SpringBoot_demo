@@ -26,7 +26,7 @@ public class UserController {
     }
 
     @RequestMapping("/add")
-    public void add(@RequestBody User user){
+    public void add( User user){
         userService.add(user);
     }
     @RequestMapping("/findById/{id}")

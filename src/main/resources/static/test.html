@@ -39,14 +39,59 @@
                 <template slot-scope="scope">
                     <el-button
                             size="mini"
-                            @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+                            @click="handleEdit(scope.row)">编辑
+                    </el-button>
                     <el-button
                             size="mini"
                             type="danger"
-                            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+                            @click="handleDelete(scope.row)">删除
+                    </el-button>
                 </template>
             </el-table-column>
         </el-table>
+        <div align="center">
+            <el-pagination
+                    @current-change="editCurrent"
+                    :current-page=currentpage
+                    background
+                    :page-size=5
+                    layout="prev, pager, next"
+                    :total="total">
+            </el-pagination>
+        </div>
+
+
+        <el-dialog
+                title="修改用户信息"
+                :visible.sync="dialogVisible"
+                width="60%"
+        >
+            <div>
+                <label>用户id</label>
+                <el-input
+                        placeholder="请输入用户id"
+                        v-model="editForm.id"
+                        clearable>
+                </el-input>
+                <label>姓名</label>
+                <el-input
+                        placeholder="请输入用户姓名"
+                        v-model="editForm.username"
+                        clearable>
+                </el-input>
+                <label>密码</label>
+                <el-input
+                        placeholder="请输入用户密码"
+                        v-model="editForm.password"
+                        clearable>
+                </el-input>
+            </div>
+
+            <span slot="footer" class="dialog-footer">
+    <el-button @click="dialogVisible = false">取 消</el-button>
+    <el-button type="primary" @click="editform">确 定</el-button>
+  </span>
+        </el-dialog>
     </template>
 </div>
 </body>
@@ -55,28 +100,66 @@
         data() {
             return {
                 tableData: [],
-                search: ''
+                search: '',
+                currentpage: 1,
+                dialogVisible: false,
+                editForm: {},
+                total:''
             }
         },
         methods: {
+            editCurrent: function (newCurrent) {
+                this.currentpage = newCurrent;
+                this.findPage()
+            },
+            findPage() {
+                var _this = this;
+                axios.get("http://localhost/user//search/" + this.currentpage + "/5").then(response => {
+                    _this.tableData = response.data.rows;
+                    _this.total=response.data.total;
+                })
+            },
             links: function () {
-                var _this=this;
-                axios.get("http://localhost/user/findAll").then (function (res) {
+                var _this = this;
+                axios.get("http://localhost/user/findAll").then(function (res) {
                     _this.tableData = res.data;
                     console.log(res.data);
-                    console.log(this.tableData);
+                    console.log(_this.tableData);
 
                 })
             },
-            handleEdit(index, row) {
-                console.log(index, row);
+            async editform() {
+                await axios.get("http://localhost/user/add", {
+                    params: {
+                        username: this.editForm.username,
+                        password: this.editForm.password
+                    },
+                    header: {
+                        'Content-Type': 'application/json'  //如果写成contentType会报错
+                    }
+                })
+                dialogVisible = false
             },
-            handleDelete(index, row) {
-                console.log(index, row);
+
+            handleEdit(row) {
+                console.log(row);
+                this.dialogVisible = true;
+                this.editForm = {
+                    id: row.id,
+                    username: row.username,
+                    password: row.password
+                }
+            },
+            async handleDelete(data) {
+                console.log(data)
+                await axios.get("http://localhost/user/delete/" + data.id)
+                this.links()
             }
         },
-        created(){
-            this.links()
+        created() {
+            // this.links()
+            this.findPage()
+
         }
     }
     var Ctor = Vue.extend(Main)
