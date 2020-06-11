@@ -1,7 +1,9 @@
 package com.book.demo.controller;
 
+import com.book.demo.entity.PageResult;
 import com.book.demo.entity.User;
 import com.book.demo.service.UserService;
+import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,6 +33,12 @@ public class UserController {
     public List<User> findById(@PathVariable("id") int id){
         List<User>  list = userService.findById(id);
         return list;
+    }
+    @GetMapping("/search/{page}/{size}")
+    public PageResult<User> findpage(@PathVariable("page") int page,@PathVariable("size") int size){
+        Page<User> pageInfo = userService.findPage(page, size);
+        PageResult pageResult =new PageResult(pageInfo.getTotal(),pageInfo.getResult());
+        return pageResult;
     }
 
 }

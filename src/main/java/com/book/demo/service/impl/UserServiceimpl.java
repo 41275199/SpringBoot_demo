@@ -3,6 +3,8 @@ package com.book.demo.service.impl;
 import com.book.demo.entity.User;
 import com.book.demo.mapper.UserMapper;
 import com.book.demo.service.UserService;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,5 +32,12 @@ public class UserServiceimpl implements UserService {
     @Override
     public List<User> findAll() {
         return userMapper.findAll();
+    }
+
+    @Override
+    public Page<User> findPage(int page, int size) {
+        PageHelper.startPage(page,size);
+        Page<User> page1= (Page<User>) userMapper.findAll();
+        return page1;
     }
 }
