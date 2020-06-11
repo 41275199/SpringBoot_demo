@@ -60,7 +60,15 @@
             </el-pagination>
         </div>
 
-
+        <el-button type="success" @click="downloadTemplate()">模板下载</el-button>
+        <el-upload action="/user/upload"
+                   name="excelFile"
+                   :show-file-list="false"
+                   :on-success="handleSuccess"
+                   :before-upload="beforeUpload"
+                   @click="findPage()">
+            <el-button type="primary">上传文件</el-button>
+        </el-upload>
         <el-dialog
                 title="修改用户信息"
                 :visible.sync="dialogVisible"
@@ -104,7 +112,7 @@
                 currentpage: 1,
                 dialogVisible: false,
                 editForm: {},
-                total:''
+                total: ''
             }
         },
         methods: {
@@ -116,7 +124,7 @@
                 var _this = this;
                 axios.get("http://localhost/user//search/" + this.currentpage + "/5").then(response => {
                     _this.tableData = response.data.rows;
-                    _this.total=response.data.total;
+                    _this.total = response.data.total;
                 })
             },
             links: function () {
@@ -139,6 +147,27 @@
                     }
                 })
                 this.dialogVisible = false
+                this.findPage()
+            },
+            //上传之前进行文件格式校验
+            beforeUpload(file){
+                const isXLS = file.type === 'application/vnd.ms-excel';
+                if(isXLS){
+                    return true;
+                }
+                const isXLSX = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
+                if (isXLSX) {
+                    return true;
+                }
+                this.$message.error('上传文件只能是xls或者xlsx格式!');
+                return false;
+            },
+            //上传成功提示
+            downloadTemplate() {
+                window.location.href = "test.xlsx";
+                this.findPage()
+            }
+            ,handleSuccess() {
                 this.findPage()
             },
 

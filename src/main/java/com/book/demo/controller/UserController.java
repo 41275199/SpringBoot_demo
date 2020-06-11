@@ -3,10 +3,14 @@ package com.book.demo.controller;
 import com.book.demo.entity.PageResult;
 import com.book.demo.entity.User;
 import com.book.demo.service.UserService;
+import com.book.demo.utils.POIUtils;
 import com.github.pagehelper.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 @CrossOrigin
 @RestController
@@ -40,5 +44,25 @@ public class UserController {
         PageResult pageResult =new PageResult(pageInfo.getTotal(),pageInfo.getResult());
         return pageResult;
     }
+   @RequestMapping("/upload")
+    public boolean upload(@RequestParam("excelFile")MultipartFile excelFile){
+       try {
+           List<String[]> list = POIUtils.readExcel(excelFile);
+           for (String[] strings : list) {
+               String username = strings[0];
+               String password = strings[1];
+               User NewUser = new User();
+               NewUser.setId(null);
+               NewUser.setUsername(username);
+               NewUser.setPassword(password);
+               userService.add(NewUser);
 
+           }
+
+       } catch (IOException e) {
+           e.printStackTrace();
+           return false;
+       }
+       return true;
+   }
 }
